@@ -33,17 +33,28 @@ const createCardFormName = createCardFormElement.elements['place-name'];
 const createCardFormLink = createCardFormElement.elements['link'];
 
 
-// Управление карточкой
+// Просмотр карточки
+
+const viewCardCaption = document.querySelector('.popup__caption');
+const viewCardImage = document.querySelector('.popup__image');
+
+
+function handleCardImageClick (card) {
+  viewCardCaption.textContent = card.name;
+  viewCardImage.src = card.link;
+  openModal(Popups.imagePopup);
+}
 
 
 
-// @todo: Функция создания карточки
+//  Функция создания карточки
 function createCard(card) {
   const cardElement = cardTemplate.content.cloneNode(true);
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
   cardImage.src = card.link;
   cardTitle.textContent = card.name;
+  cardImage.addEventListener('click', (e) => handleCardImageClick(card));
   return cardElement;
 }
 
@@ -81,6 +92,7 @@ profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 
 Object.values(Popups).forEach((popup) => {
   const closeButtonElement = popup.querySelector('.popup__close');
+  popup.classList.add('popup_is-animated');
   closeButtonElement.addEventListener('click' ,() => closePopup(popup));
 })
 
@@ -119,6 +131,7 @@ initialCards.forEach((card) => {
 
   likeCardButton.addEventListener('click' ,() => likeCardButton.classList.toggle('card__like-button_is-active'));
   deleteCardButton.addEventListener('click', (e) => container.removeChild(e.currentTarget.closest('.card')));
+
   container.appendChild(newCard);
 });
 
