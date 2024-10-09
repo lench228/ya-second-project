@@ -113,8 +113,12 @@ createCardButton.addEventListener('click', (e) => handleCreateButtonClick())
 
 initialCards.forEach((card) => {
   const newCard = createCard(card);
+
   const likeCardButton = newCard.querySelector('.card__like-button');
+  const deleteCardButton = newCard.querySelector('.card__delete-button');
+
   likeCardButton.addEventListener('click' ,() => likeCardButton.classList.toggle('card__like-button_is-active'));
+  deleteCardButton.addEventListener('click', (e) => container.removeChild(e.currentTarget.closest('.card')));
   container.appendChild(newCard);
 });
 
