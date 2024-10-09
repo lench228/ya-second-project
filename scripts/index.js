@@ -7,6 +7,14 @@ const cardTemplate = document.querySelector('#card-template');
 const container = document.querySelector('.places__list');
 
 
+const Popups = {
+     profilePopup: document.querySelector('.popup_type_edit'),
+     cardPopup: document.querySelector('.popup_type_new-card'),
+     imagePopup: document.querySelector('.popup_type_image'),
+}
+
+
+
 // @todo: Функция создания карточки
 function createCard(card) {
 
@@ -17,11 +25,21 @@ function createCard(card) {
     cardTitle.textContent = card.name;
     return cardElement;
 }
+// @todo: Обработчики событий на попапы
+
+function openModal(popup) {
+    popup.classList.add('popup_is-opened');
+}
+
+function closePopup(popup) {
+    popup.classList.remove('popup_is-opened');
+}
+
+// @todo: Попап редактирования профиля
 
 // @todo: Функция удаления карточки
 
 // @todo: Вывести карточки на страницу
-
 initialCards.forEach((card) => {
     const newCard = createCard(card);
     container.appendChild(newCard);
