@@ -7,12 +7,24 @@ const cardTemplate = document.querySelector('#card-template');
 const container = document.querySelector('.places__list');
 
 
+const profileTitleElement = document.querySelector('.profile__title');
+const profileDescriptionElement = document.querySelector('.profile__description');
+
+
+const popupEditButtonElement = document.querySelector('.profile__edit-button');
+const popupEditCloseButtonElement = document.querySelector('.popup__close');
+
+
 const Popups = {
      profilePopup: document.querySelector('.popup_type_edit'),
      cardPopup: document.querySelector('.popup_type_new-card'),
      imagePopup: document.querySelector('.popup_type_image'),
 }
 
+const profileFormElement = Popups.profilePopup.querySelector('.popup__form');
+
+const profileFormTitle = profileFormElement.elements.name;
+const profileFormDescription = profileFormElement.elements.description;
 
 
 // @todo: Функция создания карточки
@@ -36,6 +48,29 @@ function closePopup(popup) {
 }
 
 // @todo: Попап редактирования профиля
+
+
+function handleProfileFormSubmit(evt) {
+    evt.preventDefault();
+    profileTitleElement.textContent = profileFormTitle.value;
+    profileDescriptionElement.textContent = profileFormDescription.value;
+
+    closePopup(Popups.profilePopup);
+}
+
+profileFormElement.addEventListener('submit', handleProfileFormSubmit);
+
+function handleEditButtonClick(title, description, popup) {
+
+    profileFormTitle.value = title;
+    profileFormDescription.value = description;
+
+    openModal(Popups.profilePopup);
+}
+
+
+popupEditButtonElement.addEventListener('click', (e) => handleEditButtonClick(profileTitleElement.textContent, profileDescriptionElement.textContent, e.currentTarget));
+popupEditCloseButtonElement.addEventListener('click', () => closePopup(Popups.profilePopup));
 
 // @todo: Функция удаления карточки
 
