@@ -33,6 +33,10 @@ const createCardFormName = createCardFormElement.elements['place-name'];
 const createCardFormLink = createCardFormElement.elements['link'];
 
 
+// Управление карточкой
+
+
+
 // @todo: Функция создания карточки
 function createCard(card) {
   const cardElement = cardTemplate.content.cloneNode(true);
@@ -109,6 +113,8 @@ createCardButton.addEventListener('click', (e) => handleCreateButtonClick())
 
 initialCards.forEach((card) => {
   const newCard = createCard(card);
+  const likeCardButton = newCard.querySelector('.card__like-button');
+  likeCardButton.addEventListener('click' ,() => likeCardButton.classList.toggle('card__like-button_is-active'));
   container.appendChild(newCard);
 });
 
