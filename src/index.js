@@ -1,12 +1,11 @@
-import {initialCards} from './scripts/cards.js';
+import {initialCards} from './mock/mock-cards.js';
 import './pages/index.css';
 
-import {enableValidation, ValidateSettings} from "./scripts/validate";
-
+import {enableValidation, ValidateSettings} from "./components/validate";
+import {createCard} from "./components/card";
+import {closePopup, openModal} from "./components/modal";
 
 enableValidation(ValidateSettings);
-
-
 // Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
 
@@ -46,63 +45,15 @@ const viewCardCaption = document.querySelector('.popup__caption');
 const viewCardImage = document.querySelector('.popup__image');
 
 
-function handleCardImageClick (card) {
+const handleCardImageClick = (card) =>  {
   viewCardCaption.textContent = card.name;
   viewCardImage.src = card.link;
   openModal(Popups.imagePopup);
 }
 
-// Обработчики событий на попапы
-
-function openModal(popup) {
-  document.body.addEventListener('keydown', closeByEsc);
-  popup.classList.add('popup_is-opened');
-}
-
-function closePopup(popup) {
-  document.body.removeEventListener('keydown', closeByEsc);
-  popup.classList.remove('popup_is-opened');
-}
-
-
-const handleBodyClick = (e) => {
-  if(e.target.classList.contains('popup_is-opened')) {
-    e.target.classList.remove('popup_is-opened');
-  }
-}
-// Закрытие попапа
-document.body.addEventListener('click', (e) => handleBodyClick(e));
-
-
-function closeByEsc(evt) {
-  if (evt.key === "Escape") {
-    const openedPopup = document.querySelector('.popup_is-opened');
-    closePopup(openedPopup);
-  }
-}
-
-//  Функция создания карточки
-function createCard(card) {
-  const cardElement = cardTemplate.content.cloneNode(true);
-  const cardImage = cardElement.querySelector('.card__image');
-  const cardTitle = cardElement.querySelector('.card__title');
-  cardImage.src = card.link;
-  cardTitle.textContent = card.name;
-  cardImage.addEventListener('click', (e) => handleCardImageClick(card));
-
-  const likeCardButton = cardElement.querySelector('.card__like-button');
-  const deleteCardButton = cardElement.querySelector('.card__delete-button');
-
-  likeCardButton.addEventListener('click' ,() => likeCardButton.classList.toggle('card__like-button_is-active'));
-  deleteCardButton.addEventListener('click', (e) => container.removeChild(e.currentTarget.closest('.card')));
-  return cardElement;
-}
-
-
-
 //  Попап редактирования профиля
 
-function handleProfileFormSubmit(evt) {
+const handleProfileFormSubmit = (evt) => {
   evt.preventDefault();
   profileTitleElement.textContent = profileFormTitle.value;
   profileDescriptionElement.textContent = profileFormDescription.value;
@@ -110,38 +61,33 @@ function handleProfileFormSubmit(evt) {
   closePopup(Popups.profilePopup);
 }
 
-function handleEditButtonClick(title, description, popup) {
-
+const handleEditButtonClick = (title, description) => {
   profileFormTitle.value = title;
   profileFormDescription.value = description;
-
   openModal(Popups.profilePopup);
 }
 
-editButtonElement.addEventListener('click', (e) => handleEditButtonClick(profileTitleElement.textContent, profileDescriptionElement.textContent, e.currentTarget));
+editButtonElement.addEventListener('click', (e) => handleEditButtonClick(profileTitleElement.textContent, profileDescriptionElement.textContent));
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 
-Object.values(Popups).forEach((popup) => {
-  const closeButtonElement = popup.querySelector('.popup__close');
-  popup.classList.add('popup_is-animated');
-  closeButtonElement.addEventListener('click' ,() => closePopup(popup));
-
-})
 
 
-// Попап добавления карточки
 
-function handleCreateCardSubmit(e) {
+// Создание карточки
+
+const handleCreateCardSubmit = (e) => {
   e.preventDefault();
-  const card = createCard({name: createCardFormName.value, link: createCardFormLink.value});
+  const card = createCard({name: createCardFormName.value, link: createCardFormLink.value}, cardTemplate, handleCardImageClick, container);
   container.prepend(card);
   closePopup(Popups.cardPopup);
 }
 
 createCardFormElement.addEventListener('submit', (e) => {handleCreateCardSubmit(e)})
 
-function handleCreateButtonClick(){
+// Кнопка создания карточки
+
+const handleCreateButtonClick = () =>{
   createCardFormName.value = '';
   createCardFormLink.value = '';
   openModal(Popups.cardPopup);
@@ -149,11 +95,18 @@ function handleCreateButtonClick(){
 
 createCardButton.addEventListener('click', (e) => handleCreateButtonClick())
 
+// Инициация попапов
 
-// @todo: Функция удаления карточки
+Object.values(Popups).forEach((popup) => {
+  const closeButtonElement = popup.querySelector('.popup__close');
+  popup.classList.add('popup_is-animated');
+  closeButtonElement.addEventListener('click' ,() => closePopup(popup));
+})
+
+// init cards
 
 initialCards.forEach((card) => {
-  const newCard = createCard(card);
+  const newCard = createCard(card, cardTemplate, handleCardImageClick, container);
   container.appendChild(newCard);
 });
 
