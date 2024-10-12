@@ -45,19 +45,6 @@ function handleCardImageClick (card) {
   openModal(Popups.imagePopup);
 }
 
-
-
-//  Функция создания карточки
-function createCard(card) {
-  const cardElement = cardTemplate.content.cloneNode(true);
-  const cardImage = cardElement.querySelector('.card__image');
-  const cardTitle = cardElement.querySelector('.card__title');
-  cardImage.src = card.link;
-  cardTitle.textContent = card.name;
-  cardImage.addEventListener('click', (e) => handleCardImageClick(card));
-  return cardElement;
-}
-
 // Обработчики событий на попапы
 
 function openModal(popup) {
@@ -67,6 +54,25 @@ function openModal(popup) {
 function closePopup(popup) {
   popup.classList.remove('popup_is-opened');
 }
+
+//  Функция создания карточки
+function createCard(card) {
+  const cardElement = cardTemplate.content.cloneNode(true);
+  const cardImage = cardElement.querySelector('.card__image');
+  const cardTitle = cardElement.querySelector('.card__title');
+  cardImage.src = card.link;
+  cardTitle.textContent = card.name;
+  cardImage.addEventListener('click', (e) => handleCardImageClick(card));
+
+  const likeCardButton = cardElement.querySelector('.card__like-button');
+  const deleteCardButton = cardElement.querySelector('.card__delete-button');
+
+  likeCardButton.addEventListener('click' ,() => likeCardButton.classList.toggle('card__like-button_is-active'));
+  deleteCardButton.addEventListener('click', (e) => container.removeChild(e.currentTarget.closest('.card')));
+  return cardElement;
+}
+
+
 
 //  Попап редактирования профиля
 
@@ -99,16 +105,14 @@ Object.values(Popups).forEach((popup) => {
 
 // Попап добавления карточки
 
-editButtonElement.addEventListener('click', (e) => handleEditButtonClick(profileTitleElement.textContent, profileDescriptionElement.textContent, e.currentTarget));
-
-createCardFormElement.addEventListener('submit', (e) => {handleCreateCardSubmit(e)})
-
 function handleCreateCardSubmit(e) {
   e.preventDefault();
   const card = createCard({name: createCardFormName.value, link: createCardFormLink.value});
-  container.appendChild(card);
+  container.prepend(card);
   closePopup(Popups.cardPopup);
 }
+
+createCardFormElement.addEventListener('submit', (e) => {handleCreateCardSubmit(e)})
 
 function handleCreateButtonClick(){
   createCardFormName.value = '';
@@ -121,17 +125,59 @@ createCardButton.addEventListener('click', (e) => handleCreateButtonClick())
 
 // @todo: Функция удаления карточки
 
-// Вывести карточки на страниц
-
 initialCards.forEach((card) => {
   const newCard = createCard(card);
-
-  const likeCardButton = newCard.querySelector('.card__like-button');
-  const deleteCardButton = newCard.querySelector('.card__delete-button');
-
-  likeCardButton.addEventListener('click' ,() => likeCardButton.classList.toggle('card__like-button_is-active'));
-  deleteCardButton.addEventListener('click', (e) => container.removeChild(e.currentTarget.closest('.card')));
-
   container.appendChild(newCard);
 });
+
+
+// ошибки
+const showInputError = (formElement, inputElement, errorMessage) => {
+  inputElement.classList.add('popup__input_error');
+  const error = formElement.querySelector(`.popup__error_${inputElement.name}`);
+  error.textContent = errorMessage;
+  error.classList.add('popup__error_active');
+}
+
+const hideInputError = (formElement, inputElement) =>{
+  inputElement.classList.remove('popup__input_error');
+  const error = formElement.querySelector(`.popup__error_${inputElement.name}`);
+  error.classList.remove('popup__error_active');
+}
+
+
+const isValid = (formElement, inputElement) => {
+  const button = formElement.querySelector('.popup__button');
+  if (!inputElement.validity.valid) {
+    showInputError(formElement, inputElement, inputElement.validationMessage);
+    button.setAttribute('disabled', true);
+    button.classList.add('popup__button_inactive');
+    console.log(button);
+  } else {
+    hideInputError(formElement, inputElement);
+    button.removeAttribute('disabled');
+    button.classList.remove('popup__button_inactive');
+  }
+};
+
+const setEventListeners = (formElement) => {
+
+  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
+
+  inputList.forEach((inputElement) => {
+    inputElement.addEventListener('input', () => {
+      isValid(formElement, inputElement)
+    });
+  });
+};
+
+const enableValidation = () => {
+  const formList = Array.from(document.querySelectorAll('.popup__form'));
+  console.log(formList);
+  formList.forEach((formElement) => {
+    setEventListeners(formElement);
+  });
+};
+
+enableValidation();
 
