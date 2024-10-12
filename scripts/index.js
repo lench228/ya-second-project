@@ -48,11 +48,30 @@ function handleCardImageClick (card) {
 // Обработчики событий на попапы
 
 function openModal(popup) {
+  document.body.addEventListener('keydown', closeByEsc);
   popup.classList.add('popup_is-opened');
 }
 
 function closePopup(popup) {
+  document.body.removeEventListener('keydown', closeByEsc);
   popup.classList.remove('popup_is-opened');
+}
+
+
+const handleBodyClick = (e) => {
+  if(e.target.classList.contains('popup_is-opened')) {
+    e.target.classList.remove('popup_is-opened');
+  }
+}
+// Закрытие попапа
+document.body.addEventListener('click', (e) => handleBodyClick(e));
+
+
+function closeByEsc(evt) {
+  if (evt.key === "Escape") {
+    const openedPopup = document.querySelector('.popup_is-opened');
+    closePopup(openedPopup);
+  }
 }
 
 //  Функция создания карточки
@@ -100,6 +119,7 @@ Object.values(Popups).forEach((popup) => {
   const closeButtonElement = popup.querySelector('.popup__close');
   popup.classList.add('popup_is-animated');
   closeButtonElement.addEventListener('click' ,() => closePopup(popup));
+
 })
 
 
@@ -132,10 +152,25 @@ initialCards.forEach((card) => {
 
 
 // ошибки
-const showInputError = (formElement, inputElement, errorMessage) => {
+const showInputError = (formElement, inputElement, validity) => {
   inputElement.classList.add('popup__input_error');
   const error = formElement.querySelector(`.popup__error_${inputElement.name}`);
-  error.textContent = errorMessage;
+
+  if (validity.valueMissing) {
+    error.textContent = 'Вы пропустили это поле.';
+  } else if(validity.tooShort) {
+    error.textContent = 'Слишком мало символов.';
+  }
+  else if(validity.tooLong) {
+      error.textContent = 'Слишком много символов.';
+  }
+  else if(validity.typeMismatch) {
+      error.textContent = 'Введите url.'
+  }
+  else {
+    error.textContent = 'Ошибка.';
+  }
+
   error.classList.add('popup__error_active');
 }
 
@@ -145,19 +180,29 @@ const hideInputError = (formElement, inputElement) =>{
   error.classList.remove('popup__error_active');
 }
 
-
-const isValid = (formElement, inputElement) => {
+const toggleButton = (formElement) => {
+  const isInvalid = Array.from(formElement.elements).some((item) =>
+    !item.validity.valid
+  );
+  console.log(isInvalid);
   const button = formElement.querySelector('.popup__button');
-  if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validationMessage);
-    button.setAttribute('disabled', true);
-    button.classList.add('popup__button_inactive');
-    console.log(button);
-  } else {
-    hideInputError(formElement, inputElement);
+  if(!isInvalid){
     button.removeAttribute('disabled');
     button.classList.remove('popup__button_inactive');
+  }else {
+    button.setAttribute('disabled', true);
+    button.classList.add('popup__button_inactive');
   }
+}
+
+const isValid = (formElement, inputElement) => {
+  if (!inputElement.validity.valid) {
+    showInputError(formElement, inputElement, inputElement.validity);
+
+  } else {
+    hideInputError(formElement, inputElement);
+  }
+  toggleButton(formElement);
 };
 
 const setEventListeners = (formElement) => {
@@ -173,7 +218,6 @@ const setEventListeners = (formElement) => {
 
 const enableValidation = () => {
   const formList = Array.from(document.querySelectorAll('.popup__form'));
-  console.log(formList);
   formList.forEach((formElement) => {
     setEventListeners(formElement);
   });
