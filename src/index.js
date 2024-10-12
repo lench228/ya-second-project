@@ -1,4 +1,11 @@
-import {initialCards} from './cards.js';
+import {initialCards} from './scripts/cards.js';
+import './pages/index.css';
+
+import {enableValidation, ValidateSettings} from "./scripts/validate";
+
+
+enableValidation(ValidateSettings);
+
 
 // Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
@@ -149,79 +156,4 @@ initialCards.forEach((card) => {
   const newCard = createCard(card);
   container.appendChild(newCard);
 });
-
-
-// ошибки
-const showInputError = (formElement, inputElement, validity) => {
-  inputElement.classList.add('popup__input_error');
-  const error = formElement.querySelector(`.popup__error_${inputElement.name}`);
-
-  if (validity.valueMissing) {
-    error.textContent = 'Вы пропустили это поле.';
-  } else if(validity.tooShort) {
-    error.textContent = 'Слишком мало символов.';
-  }
-  else if(validity.tooLong) {
-      error.textContent = 'Слишком много символов.';
-  }
-  else if(validity.typeMismatch) {
-      error.textContent = 'Введите url.'
-  }
-  else {
-    error.textContent = 'Ошибка.';
-  }
-
-  error.classList.add('popup__error_active');
-}
-
-const hideInputError = (formElement, inputElement) =>{
-  inputElement.classList.remove('popup__input_error');
-  const error = formElement.querySelector(`.popup__error_${inputElement.name}`);
-  error.classList.remove('popup__error_active');
-}
-
-const toggleButton = (formElement) => {
-  const isInvalid = Array.from(formElement.elements).some((item) =>
-    !item.validity.valid
-  );
-  console.log(isInvalid);
-  const button = formElement.querySelector('.popup__button');
-  if(!isInvalid){
-    button.removeAttribute('disabled');
-    button.classList.remove('popup__button_inactive');
-  }else {
-    button.setAttribute('disabled', true);
-    button.classList.add('popup__button_inactive');
-  }
-}
-
-const isValid = (formElement, inputElement) => {
-  if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validity);
-
-  } else {
-    hideInputError(formElement, inputElement);
-  }
-  toggleButton(formElement);
-};
-
-const setEventListeners = (formElement) => {
-
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-
-  inputList.forEach((inputElement) => {
-    inputElement.addEventListener('input', () => {
-      isValid(formElement, inputElement)
-    });
-  });
-};
-
-const enableValidation = () => {
-  const formList = Array.from(document.querySelectorAll('.popup__form'));
-  formList.forEach((formElement) => {
-    setEventListeners(formElement);
-  });
-};
-
-enableValidation();
 
