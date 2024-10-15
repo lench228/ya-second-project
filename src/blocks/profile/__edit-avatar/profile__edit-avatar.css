@@ -1,0 +1,12 @@
+@import url('_not-active/profile__edit-avatar_not-active.css');
+
+.profile__edit-avatar{
+    width: 26px;
+    height: 26px;
+    position: absolute;
+    z-index: 2;
+    top: 40%;
+    left: 40%;
+    display: none;
+}
+

@@ -19,8 +19,8 @@ const handleBodyClick = (e) => {
 
 document.body.addEventListener('click', (e) => handleBodyClick(e));
 
-const closeByEsc = (evt) => {
-  if (evt.key === "Escape") {
+const closeByEsc = (e) => {
+  if (e.key === "Escape") {
     const openedPopup = document.querySelector('.' + popupOpenClass);
     closePopup(openedPopup);
   }

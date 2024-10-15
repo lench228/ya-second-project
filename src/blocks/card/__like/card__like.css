@@ -1,0 +1,10 @@
+@import url('_button/card__like_button.css');
+@import url('_button/_is-active/card__like_button_is-active.css');
+@import url('_counter/card__like_counter.css');
+
+.card__like {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
