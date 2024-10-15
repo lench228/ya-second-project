@@ -46,7 +46,6 @@ const toggleButtonState = (formElement, settings) => {
   const { submitButtonSelector, submitButtonInactiveClass } = settings;
   const buttonElement = formElement.querySelector(submitButtonSelector);
   const isFormValid = formElement.checkValidity();
-
   if (isFormValid) {
     buttonElement.removeAttribute('disabled');
     buttonElement.classList.remove(submitButtonInactiveClass);
@@ -82,6 +81,6 @@ export const enableValidation = (settings) => {
 
   formElements.forEach((formElement) => {
     setEventListeners(formElement, settings);
-    toggleButtonState(formElement, settings); // Ensure button state is set on load
+    toggleButtonState(formElement, settings);
   });
 };
