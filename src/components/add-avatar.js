@@ -1,4 +1,4 @@
-import {patchAvatar} from "../../api";
+import {patchAvatar} from "../api/api";
 import {openModal} from "./modal";
 
 export const avatarPopup = document.querySelector('.popup_type_avatar');

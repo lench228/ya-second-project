@@ -1,5 +1,5 @@
 //  Функция создания карточки
-import {deleteCard, deleteLike, putLike} from "../../api";
+import {deleteCard, deleteLike, putLike} from "../api/api";
 
 const CardSettings= {
   titleSelector: '.card__title',
@@ -80,7 +80,7 @@ export const  createCard = (card, cardTemplate, handleCardImageClick, container,
 
   cardRootElement.setAttribute('id', card._id);
 
-  cardImage.addEventListener('click', (e) => handleCardImageClick(card));
+  cardImage.addEventListener('click', () => handleCardImageClick(card));
 
 
   const deleteCardButton = cardElement.querySelector(CardSettings.deleteSelector);
