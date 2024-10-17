@@ -1,12 +1,11 @@
 import './pages/index.css';
 
-import {enableValidation, ValidateSettings} from "./components/validate";
-import {createCard} from "./components/card";
-import {closePopup, openModal} from "./components/modal";
-import {profilePopup, setUpUser} from "./components/profile";
-import {getCards, postCard} from "../api";
-import {avatarPopup, initAddAvatar} from "./components/addAvatar";
-
+import { enableValidation, ValidateSettings } from "./components/validate";
+import { createCard } from "./components/card";
+import { closePopup, openModal } from "./components/modal";
+import { profilePopup, setUpUser } from "./components/profile";
+import { getCards, postCard } from "./api/api";
+import { avatarPopup, initAddAvatar } from "./components/add-avatar";
 
 // Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
@@ -17,8 +16,8 @@ const container = document.querySelector('.places__list');
 const Popups = {
   profilePopup: profilePopup,
   cardPopup: document.querySelector('.popup_type_new-card'),
-  imagePopup:  document.querySelector('.popup_type_image'),
-  avatarPopup:  avatarPopup,
+  imagePopup: document.querySelector('.popup_type_image'),
+  avatarPopup: avatarPopup,
 }
 
 // DOM Создание карточки
@@ -38,31 +37,32 @@ const handleCardImageClick = (card) =>  {
   openModal(Popups.imagePopup);
 }
 
-// Создание карточки
+// Обработчик отправки карточки
 const handleCreateCardSubmit = (e, userId) => {
-
   e.preventDefault();
-
   const form = e.currentTarget;
   const submitButton = form.querySelector('.button');
 
-  submitButton.textContent = 'Сохранение...'
-  submitButton.disabled = true;
+  toggleButtonState(submitButton, 'Сохранение...', true);
 
   postCard(form.elements['name'], form.elements['link'])
     .then((card) => {
-      const cardElement = createCard( card, cardTemplate, handleCardImageClick, container, userId);
+      const cardElement = createCard(card, cardTemplate, handleCardImageClick, container, userId);
       container.prepend(cardElement);
       closePopup(Popups.cardPopup);
     })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
     })
     .finally(() => {
-        submitButton.textContent = 'Сохранить';
-        submitButton.disabled = false;
-    }
-    )
+      toggleButtonState(submitButton, 'Сохранить', false);
+    });
+}
+
+// Функция для управления состоянием кнопки
+const toggleButtonState = (button, text, isDisabled) => {
+  button.textContent = text;
+  button.disabled = isDisabled;
 }
 
 // Кнопка создания карточки
@@ -83,39 +83,27 @@ const createDomCard = (card, userId) => {
   container.appendChild(newCard);
 }
 
-// init
+// Инициализация
 const init = () => {
+  let userId = '';
 
-  let userId = ''
+  // Инициализация попапов
+  Object.values(Popups).forEach(initPopup);
 
-  Object.values(Popups).forEach((popup) => {
-    initPopup(popup);
-  })
-
-  setUpUser
-    .then((user)=> {
+  // Получение данных пользователя и карточек
+  Promise.all([setUpUser(), getCards()])
+    .then(([user, cards]) => {
       userId = user._id;
+      cards.forEach(card => createDomCard(card, userId));
     })
-    .catch(e => console.error(e));
-
-  getCards()
-    .then((cards) => {
-      cards.forEach((card) => {
-        createDomCard(card, userId);
-      })
-    })
-    .catch(err => console.log(err));
-
+    .catch(err => console.error(err));
 
   enableValidation(ValidateSettings);
   initAddAvatar();
 
-  createCardFormElement.addEventListener('submit', (e) => {handleCreateCardSubmit(e, userId)})
-  createCardButton.addEventListener('click', (e) => handleCreateButtonClick())
+  createCardFormElement.addEventListener('submit', (e) => handleCreateCardSubmit(e, userId));
+  createCardButton.addEventListener('click', handleCreateButtonClick);
 }
 
+// Запуск инициализации
 init();
-
-
-
-

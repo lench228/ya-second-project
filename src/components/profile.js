@@ -1,6 +1,5 @@
-import {getUser, patchUser} from "../../api";
+import {getUser, patchUser} from "../api/api";
 import {closePopup, openModal} from "./modal";
-import user from "babel-loader/lib/Error";
 
 const profileTitleElement = document.querySelector('.profile__title');
 const profileDescriptionElement = document.querySelector('.profile__description');
@@ -66,5 +65,5 @@ export const setUpUser =
     })
 
 
-editButtonElement.addEventListener('click', (e) => handleEditButtonClick(profileTitleElement.textContent, profileDescriptionElement.textContent));
+editButtonElement.addEventListener('click', () => handleEditButtonClick(profileTitleElement.textContent, profileDescriptionElement.textContent));
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
